@@ -116,6 +116,7 @@ class Tae_CRUD(Resource):
     def delete(self, id):
         task = TaeTable.query.filter_by(id=id).first()
         db.session.delete(task)
+        db.session.commit()
         return 'Data Deleted', 204
            
 # endpoints for api
