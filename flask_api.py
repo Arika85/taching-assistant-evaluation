@@ -123,4 +123,4 @@ api.add_resource(Tae_CRUD, '/crudop/<int:id>')
 api.add_resource(Tae_CRUD_List, '/crudop')
 
 if __name__ == '__main__':
-    app.run(debug=False)
+    app.run(debug=False, host='0.0.0.0')
