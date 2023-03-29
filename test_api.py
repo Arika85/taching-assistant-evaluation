@@ -3,8 +3,8 @@ import requests
 import json
 
 class TestAPI(unittest.TestCase):
-    URL = "http://127.0.0.1:5000/crudop"
-
+    URL = "https://teaching-assistant-evaluation.onrender.com/crudop"
+    
     data = {
         "id": 3,
         "native_english_speaker": 1,
@@ -34,7 +34,7 @@ class TestAPI(unittest.TestCase):
     def test_1_get_all_crudop(self):
         resp = requests.get(self.URL)
         self.assertEqual(resp.status_code, 200)
-        self.assertEqual(len(resp.json()),3)
+        self.assertEqual(len(resp.json()),5)
         print("Test 1 (GET) completed")
 
     def test_2_post(self):

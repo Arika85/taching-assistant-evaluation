@@ -1,8 +1,12 @@
 # importing the libraries
-from flask import Flask
-from flask_restful import Resource, Api, reqparse, abort, fields, marshal_with
-from flask_sqlalchemy import SQLAlchemy
 import os
+import pickle
+import numpy as np
+import pandas as pd
+from flask import Flask, request
+from flask_sqlalchemy import SQLAlchemy
+from sklearn.preprocessing import StandardScaler
+from flask_restful import Resource, Api, reqparse, abort, fields, marshal_with
 
 # basedir for database
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -19,6 +23,48 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
+# loading model
+model = pickle.load(open('./rf_clf_model.pkl', 'rb'))
+
+
+# prediction for model
+class ModelPrediction(Resource):
+    def post(self):
+        # making model variable global
+        global model
+        # getting user data in json format
+        data = request.get_json()
+
+        # getting data from user
+        native=int(data["native_english_speaker"]) 
+        course_instr=(data["course_instructor"])
+        course=int(data["course"])
+        semester=int(data["semester"])
+        class_size=int(data["class_size"])
+
+        # converting data into array format
+        pre = np.array([[native, course_instr, course, semester, class_size]])
+        # print(pre)
+
+        # converting input data into dataframe
+        input_data = pd.DataFrame(data=pre, index=np.arange(len(pre)), columns=["native_english_speaker", "course_instructor", "course", "semester", "class_size"])
+        # print(input_data)
+        # predicting the results
+        prediction = model.predict(input_data)
+        # print(f"Prediction: {prediction}")
+
+        # prediction results
+        if prediction == 1:
+            result = "Low"
+        elif prediction == 2:
+            result = "Medium"
+        else:
+            result = "High"
+        return result
+
+
+
+
 # creating the model for database
 class TaeTable(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -31,7 +77,6 @@ class TaeTable(db.Model):
 # creating database 
 # with app.app_context():
 #     db.create_all()
-
 
 task_post_args = reqparse.RequestParser()
 task_post_args.add_argument("native_english_speaker", type=int, help="This field is required", required=True)
@@ -122,6 +167,7 @@ class Tae_CRUD(Resource):
 # endpoints for api
 api.add_resource(Tae_CRUD, '/crudop/<int:id>')
 api.add_resource(Tae_CRUD_List, '/crudop')
+api.add_resource(ModelPrediction, '/predict')
 
 if __name__ == '__main__':
-    app.run(debug=False, host='0.0.0.0')
+    app.run(debug=True)
