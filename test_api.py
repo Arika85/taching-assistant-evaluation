@@ -65,7 +65,7 @@ class TestAPI(unittest.TestCase):
 
 if __name__=="__main__":
     tester = TestAPI()
-    
+   
     tester.test_1_get_all_crudop()
     tester.test_2_post()
     tester.test_3_get_specific()
