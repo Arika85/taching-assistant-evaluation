@@ -4,4 +4,3 @@ https://teaching-assistant-evaluation.onrender.com/crudop
 # API for prediction
 https://teaching-assistant-evaluation.onrender.com/predict
 
-
